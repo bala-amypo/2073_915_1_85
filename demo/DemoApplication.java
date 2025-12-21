@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import jakarta.servlet.annotation.ServletComponentScan;
 
 @SpringBootApplication
-@ServletComponentScan // Mandatory to detect your @WebServlet(/hello-servlet)
+@ServletComponentScan // Required to find your HelloServlet
 public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
