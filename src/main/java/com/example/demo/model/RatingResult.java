@@ -33,4 +33,3 @@ public class RatingResult {
 
     // getters & setters
 }
-Rat resu
