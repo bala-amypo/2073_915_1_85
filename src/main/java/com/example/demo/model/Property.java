@@ -1,11 +1,12 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import lombok.*;
 
 @Entity
-@Table(name = "properties")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Property {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,18 +14,10 @@ public class Property {
     private String title;
     private String address;
     private String city;
+
+    @DecimalMin(value = "0.1", message = "Price must be > 0") //
     private Double price;
+
+    @DecimalMin(value = "100.0", message = "Area must be >= 100 sq ft") //
     private Double areaSqFt;
-
-    public Property() {}
-
-    public Property(String title, String address, String city, Double price, Double areaSqFt) {
-        this.title = title;
-        this.address = address;
-        this.city = city;
-        this.price = price;
-        this.areaSqFt = areaSqFt;
-    }
-
-    // getters & setters
 }
