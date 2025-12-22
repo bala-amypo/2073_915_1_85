@@ -1,7 +1,6 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import java.security.Key;
@@ -9,29 +8,30 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public String generateToken(Long userId, String email, String role) {
-        return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId) // Required payload
-                .claim("role", role)     // Required payload
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(key)
-                .compact();
+    // In a real app, move this to application.properties
+    private final String jwtSecret = "yourSecretKeyGeneratedForExamplePurposesOnly123456";
+    private final int jwtExpirationInMs = 3600000; // 1 hour
+    private final Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+
+    // This is the method your Filter was missing!
+    public String getUsernameFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException ex) {
+            // Log the specific error if needed
             return false;
         }
-    }
-
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 }
