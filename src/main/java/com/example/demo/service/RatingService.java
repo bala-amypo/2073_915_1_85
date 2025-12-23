@@ -1,22 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.repository.RatingResultRepository;
-import com.example.demo.repository.FacilityScoreRepository;
-import com.example.demo.repository.PropertyRepository;
-import org.springframework.stereotype.Service;
+import com.example.demo.entity.RatingResult;
 
-@Service
-public class RatingService {
-    private final RatingResultRepository ratingRepo;
-    private final FacilityScoreRepository scoreRepo;
-    private final PropertyRepository propRepo;
+public interface RatingService {
+    /**
+     * Calculates and persists the final rating based on FacilityScores.
+     */
+    RatingResult generateRating(Long propertyId);
 
-    // STEP 0 Requirement: Constructor Injection
-    public RatingService(RatingResultRepository ratingRepo, 
-                         FacilityScoreRepository scoreRepo, 
-                         PropertyRepository propRepo) {
-        this.ratingRepo = ratingRepo;
-        this.scoreRepo = scoreRepo;
-        this.propRepo = propRepo;
-    }
+    /**
+     * Retrieves the already generated rating for a property.
+     */
+    RatingResult getRating(Long propertyId);
 }
