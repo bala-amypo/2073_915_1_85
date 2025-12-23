@@ -1,53 +1,27 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Entity
 @Table(name = "users")
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @NotBlank
+    private String name;
 
-    @Column(nullable = false)
+    @Email
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @NotBlank
     private String password;
 
-    // Default Constructor
-    public User() {}
-
-    // All-Args Constructor
-    public User(Long id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-    }
-
-    // MANUAL GETTERS (This fixes your "cannot find symbol" errors)
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    // MANUAL SETTERS
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String role = "ANALYST"; // Default role
 }
