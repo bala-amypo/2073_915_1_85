@@ -1,36 +1,43 @@
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys; // Required for newer versions
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwtSecret:SecretKey}")
+    @Value("${app.jwtSecret:SecretKey12345678901234567890123456789012}")
     private String jwtSecret;
 
-    @Value("${app.jwtExpirationInMs:604800000}")
-    private int jwtExpirationInMs;
+    // Helper to get the signing key
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        Date expiryDate = new Date(now.getTime() + 604800000);
 
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String getUsernameFromJWT(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        // FIXED: Added .build() before calling parseClaimsJws
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build() 
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -39,9 +46,13 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            // FIXED: Added .build() before calling parseClaimsJws
+            Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+        } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
     }
