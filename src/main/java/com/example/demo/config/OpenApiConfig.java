@@ -18,7 +18,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         // Define the server URL (local or production)
         Server localServer = new Server();
-        localServer.setUrl("http://localhost:8080");
+        localServer.setUrl("https://9088.408procr.amypo.ai/");
         localServer.setDescription("Local Development Server");
 
         final String securitySchemeName = "bearerAuth";
