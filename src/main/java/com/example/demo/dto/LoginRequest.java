@@ -1,8 +1,15 @@
 package com.example.demo.dto;
 
-public class LoginRequest {
-    private String email;
-    private String password;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-    // getters & setters
+@Data
+public class LoginRequest {
+    @Email
+    @NotBlank
+    private String email;
+
+    @NotBlank
+    private String password;
 }

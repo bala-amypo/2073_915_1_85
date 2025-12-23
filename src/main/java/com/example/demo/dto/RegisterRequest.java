@@ -1,10 +1,20 @@
 package com.example.demo.dto;
 
-public class RegisterRequest {
-    private String name;
-    private String email;
-    private String password;
-    private String role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-    // getters & setters
+@Data
+public class RegisterRequest {
+    @NotBlank
+    private String name;
+
+    @Email
+    @NotBlank
+    private String email;
+
+    @NotBlank
+    private String password;
+
+    private String role; // Optional: Defaults to ANALYST in service
 }
