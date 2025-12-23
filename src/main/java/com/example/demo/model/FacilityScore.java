@@ -3,20 +3,20 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.*;
+import lombok.Data;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Data
 public class FacilityScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "property_id")
     private Property property;
 
-    @Min(0) @Max(10) // Requirement 6: Validation Annotations
+    @Min(0) @Max(10)
     private Integer schoolProximity;
 
     @Min(0) @Max(10)
