@@ -36,21 +36,13 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager(); // [cite: 364]
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Disable CSRF for stateless API [cite: 379]
-            .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler)) // [cite: 411-415]
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // [cite: 366]
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints [cite: 368-373]
-                .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/hello-servlet").permitAll()
-                // Secured endpoints [cite: 374-378]
-                .requestMatchers("/properties/**", "/scores/**", "/ratings/**", "/logs/**").authenticated()
-                .anyRequest().authenticated()
-            );
-
-        // Register JWT filter before standard authentication [cite: 380]
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+   @Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/hello-servlet").permitAll() // [cite: 373]
+            .anyRequest().authenticated()
+        );
+    return http.build();
+}
 }
