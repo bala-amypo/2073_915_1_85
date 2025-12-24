@@ -4,13 +4,6 @@ import com.example.demo.entity.Property;
 import java.util.List;
 
 public interface PropertyService {
-    /**
-     * Adds a new property to the database.
-     */
-    Property addProperty(Property property);
-
-    /**
-     * Retrieves all properties.
-     */
-    List<Property> getAllProperties();
+    Property addProperty(Property property); // [cite: 253]
+    List<Property> getAllProperties(); // [cite: 254]
 }

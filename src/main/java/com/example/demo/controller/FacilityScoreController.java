@@ -2,27 +2,28 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.FacilityScore;
 import com.example.demo.service.FacilityScoreService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/scores")
+@RequestMapping("/scores") // [cite: 329]
 public class FacilityScoreController {
-    private final FacilityScoreService scoreService;
 
-    public FacilityScoreController(FacilityScoreService scoreService) {
-        this.scoreService = scoreService;
+    private final FacilityScoreService facilityScoreService;
+
+    public FacilityScoreController(FacilityScoreService facilityScoreService) {
+        this.facilityScoreService = facilityScoreService;
     }
 
-    @PostMapping("/{propertyId}")
-    public ResponseEntity<FacilityScore> submitScore(@PathVariable Long propertyId, 
-                                                    @Valid @RequestBody FacilityScore score) {
-        return ResponseEntity.ok(scoreService.addScore(propertyId, score));
+    @PostMapping("/{propertyId}") // [cite: 331]
+    @PreAuthorize("hasRole('ADMIN')") // [cite: 332]
+    public ResponseEntity<FacilityScore> addScore(@PathVariable Long propertyId, @RequestBody FacilityScore score) {
+        return ResponseEntity.ok(facilityScoreService.addScore(propertyId, score)); // [cite: 334]
     }
 
-    @GetMapping("/{propertyId}")
-    public ResponseEntity<FacilityScore> fetchScore(@PathVariable Long propertyId) {
-        return ResponseEntity.ok(scoreService.getScoreByProperty(propertyId));
+    @GetMapping("/{propertyId}") // [cite: 335]
+    public ResponseEntity<FacilityScore> getScore(@PathVariable Long propertyId) {
+        return ResponseEntity.ok(facilityScoreService.getScoreByProperty(propertyId)); // [cite: 337]
     }
 }
