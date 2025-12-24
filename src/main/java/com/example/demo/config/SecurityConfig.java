@@ -36,12 +36,14 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager(); // [cite: 364]
     }
 
-  @Bean
+ @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.disable())
+    http.csrf(csrf -> csrf.disable()) // CSRF must be disabled for stateless APIs 
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // [cite: 366]
         .authorizeHttpRequests(auth -> auth
-            // Add "/" to this list to allow the browser to load the base URL
-            .requestMatchers("/", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/hello-servlet").permitAll() // [cite: 368-373]
+            .requestMatchers("/properties/**").hasAnyRole("ADMIN", "ANALYST")
+            .requestMatchers("/scores/**").hasRole("ADMIN") // Restrict to ADMIN 
             .anyRequest().authenticated()
         );
     return http.build();
