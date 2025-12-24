@@ -21,19 +21,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // 1. Fetch the user from the database by email [cite: 386, 388]
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email)); // [cite: 389]
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // 2. Map the role to a GrantedAuthority with the "ROLE_" prefix 
-        // This is where you add the code you mentioned
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole()); // 
-
-        // 3. Return a UserDetails object containing the email, hashed password, and authority 
+        // Critical Fix: Prepend "ROLE_" so hasRole("ADMIN") works
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(authority) // 
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }
 }
