@@ -18,7 +18,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         // Define the server link (e.g., development environment) 
         Server devServer = new Server();
-        devServer.setUrl("http://localhost:8080");
+        devServer.setUrl("https://9088.408procr.amypo.ai/");
         devServer.setDescription("Development Server");
 
         return new OpenAPI()
