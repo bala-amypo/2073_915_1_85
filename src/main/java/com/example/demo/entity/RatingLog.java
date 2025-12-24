@@ -17,17 +17,16 @@ public class RatingLog {
     private String message;
     private LocalDateTime loggedAt;
 
-    @PrePersist
-    protected void onLog() {
-        this.loggedAt = LocalDateTime.now();
-    }
-
     public RatingLog() {}
 
+    // Getters
     public Long getId() { return id; }
     public Property getProperty() { return property; }
-    public void setProperty(Property property) { this.property = property; }
     public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
     public LocalDateTime getLoggedAt() { return loggedAt; }
+
+    // Setters
+    public void setProperty(Property property) { this.property = property; }
+    public void setMessage(String message) { this.message = message; }
+    public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
 }
