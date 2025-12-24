@@ -9,16 +9,17 @@ import com.example.demo.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwt.secret}")
+    // Adding a default value after the colon (:)
+    @Value("${app.jwt.secret:defaultSecretKeyForDevelopmentOnlyMakeItLongerInProduction}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration-ms}")
+    @Value("${app.jwt.expiration-ms:3600000}")
     private int jwtExpirationInMs;
-
+    
+    
     public String generateToken(Authentication authentication, User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
