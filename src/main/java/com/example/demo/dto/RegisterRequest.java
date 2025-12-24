@@ -8,6 +8,13 @@ public class RegisterRequest {
 
     public RegisterRequest() {}
 
+    public RegisterRequest(String name, String email, String password, String role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     // Getters and Setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
