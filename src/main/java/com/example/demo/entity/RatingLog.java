@@ -1,26 +1,37 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Table(name = "rating_logs")
 public class RatingLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // [cite: 115]
 
     @ManyToOne
     @JoinColumn(name = "property_id")
-    private Property property;
+    private Property property; // [cite: 116, 123]
 
-    private String message;
-
-    private LocalDateTime loggedAt;
+    private String message; // [cite: 117]
+    private LocalDateTime loggedAt; // [cite: 118]
 
     @PrePersist
-    protected void onCreate() {
-        this.loggedAt = LocalDateTime.now();
+    protected void onLog() {
+        this.loggedAt = LocalDateTime.now(); // [cite: 125]
     }
+
+    public RatingLog() {} // [cite: 120]
+
+    public RatingLog(Property property, String message, LocalDateTime loggedAt) {
+        this.property = property;
+        this.message = message;
+        this.loggedAt = loggedAt;
+    } // [cite: 121]
+
+    // Getters and Setters...
+    public void setProperty(Property property) { this.property = property; }
+    public void setMessage(String message) { this.message = message; }
+    public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
 }
