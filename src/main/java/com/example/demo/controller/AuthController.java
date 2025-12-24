@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
@@ -25,11 +27,15 @@ public class AuthController {
     }
 
     @PostMapping("/register") // [cite: 310]
-    public ResponseEntity<ApiResponse> registerUser(@RequestBody RegisterRequest registerRequest) {
-        User user = new User(registerRequest.getName(), registerRequest.getEmail(), 
-                             registerRequest.getPassword(), registerRequest.getRole());
-        User result = userService.registerUser(user); // [cite: 312]
-        return ResponseEntity.ok(new ApiResponse(true, "User registered successfully", result));
+    public ResponseEntity<User> registerUser(@RequestBody RegisterRequest registerRequest) {
+        User user = new User(
+            registerRequest.getName(), 
+            registerRequest.getEmail(), 
+            registerRequest.getPassword(), 
+            registerRequest.getRole()
+        );
+        User result = userService.registerUser(user); // [cite: 241, 312]
+        return ResponseEntity.ok(result); // Returning User entity directly instead of ApiResponse
     }
 
     @PostMapping("/login") // [cite: 313]
@@ -38,9 +44,9 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
 
-        User user = userService.findByEmail(loginRequest.getEmail());
-        String jwt = tokenProvider.generateToken(authentication, user); // [cite: 315]
+        User user = userService.findByEmail(loginRequest.getEmail()); // [cite: 250]
+        String jwt = tokenProvider.generateToken(authentication, user); // [cite: 397]
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getEmail(), user.getRole()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getEmail(), user.getRole())); // [cite: 152]
     }
 }
