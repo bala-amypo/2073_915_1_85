@@ -20,15 +20,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email) // [cite: 388]
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email)); // [cite: 389]
+public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Map role to ROLE_ prefix for Spring Security [cite: 390]
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-        );
-    }
+    return new org.springframework.security.core.userdetails.User(
+            user.getEmail(),
+            user.getPassword(),
+            // Ensure "ROLE_" is added here 
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+    );
+}
 }
