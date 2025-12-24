@@ -10,11 +10,10 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        // Sends 401 Unauthorized for invalid requests [cite: 415]
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized - Access is denied.");
+        // This is what triggers your "HTTP ERROR 401" page
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
     }
 }
