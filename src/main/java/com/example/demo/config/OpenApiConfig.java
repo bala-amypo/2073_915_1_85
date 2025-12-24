@@ -23,11 +23,11 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("Real Estate Rating Engine API") [cite: 422]
-                        .description("API for managing properties and computing real estate ratings.") [cite: 422]
+                        .title("Real Estate Rating Engine API")
+                        .description("API for managing properties and computing real estate ratings.")
                         .version("1.0"))
                 .servers(List.of(devServer)) // Add the server link here
-                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication")) [cite: 423]
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components().addSecuritySchemes("Bearer Authentication", createSecurityScheme()));
     }
 
@@ -36,6 +36,6 @@ public class OpenApiConfig {
                 .name("Bearer Authentication")
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
-                .bearerFormat("JWT"); [cite: 423]
+                .bearerFormat("JWT");
     }
 }
