@@ -8,30 +8,26 @@ import java.time.LocalDateTime;
 public class RatingLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // [cite: 115]
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "property_id")
-    private Property property; // [cite: 116, 123]
+    private Property property;
 
-    private String message; // [cite: 117]
-    private LocalDateTime loggedAt; // [cite: 118]
+    private String message;
+    private LocalDateTime loggedAt;
 
     @PrePersist
     protected void onLog() {
-        this.loggedAt = LocalDateTime.now(); // [cite: 125]
+        this.loggedAt = LocalDateTime.now();
     }
 
-    public RatingLog() {} // [cite: 120]
+    public RatingLog() {}
 
-    public RatingLog(Property property, String message, LocalDateTime loggedAt) {
-        this.property = property;
-        this.message = message;
-        this.loggedAt = loggedAt;
-    } // [cite: 121]
-
-    // Getters and Setters...
+    public Long getId() { return id; }
+    public Property getProperty() { return property; }
     public void setProperty(Property property) { this.property = property; }
+    public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
-    public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
+    public LocalDateTime getLoggedAt() { return loggedAt; }
 }

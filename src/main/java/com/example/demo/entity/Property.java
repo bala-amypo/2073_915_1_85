@@ -7,37 +7,32 @@ import java.util.List;
 @Entity
 @Table(name = "properties")
 public class Property {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // [cite: 58]
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    private String address;
+    private String city;
+    private Double price;
+    private Double areaSqFt;
 
-    private String title; // [cite: 59]
-    private String address; // [cite: 60]
-    private String city; // [cite: 61]
-    private Double price; // [cite: 62]
-    private Double areaSqFt; // [cite: 63]
-
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    private RatingResult ratingResult; // [cite: 68]
-
-    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RatingLog> ratingLogs = new ArrayList<>(); // [cite: 69, 75, 126]
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+    private List<RatingLog> ratingLogs = new ArrayList<>();
 
     @ManyToMany(mappedBy = "assignedProperties")
-    private List<User> assignedUsers = new ArrayList<>(); // [cite: 71]
+    private List<User> assignedUsers = new ArrayList<>();
 
-    public Property() {} // [cite: 65]
-
-    public Property(String title, String address, String city, Double price, Double areaSqFt) {
-        this.title = title;
-        this.address = address;
-        this.city = city;
-        this.price = price;
-        this.areaSqFt = areaSqFt;
-    } // [cite: 66]
-
-    // Getters and Setters...
+    public Property() {}
     public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
     public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
     public Double getAreaSqFt() { return areaSqFt; }
+    public void setAreaSqFt(Double areaSqFt) { this.areaSqFt = areaSqFt; }
+    public List<User> getAssignedUsers() { return assignedUsers; }
+    public void addRatingLog(RatingLog log) { this.ratingLogs.add(log); log.setProperty(this); }
 }
