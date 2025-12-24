@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
-import com.example.demo.security.JwtAuthenticationEntryPoint;
 import com.example.demo.security.JwtAuthenticationFilter;
+import com.example.demo.security.JwtAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,36 +16,41 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
-    public SecurityConfig(JwtAuthenticationEntryPoint unauthorizedHandler, 
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.unauthorizedHandler = unauthorizedHandler;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, 
+                          JwtAuthenticationEntryPoint unauthorizedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.unauthorizedHandler = unauthorizedHandler;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // Required for stateless JWT APIs
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                // Public paths (Available without a token)
+                .requestMatchers("/", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/hello-servlet").permitAll()
+                // Role-protected paths
+                .requestMatchers("/properties/**").hasAnyRole("ADMIN", "ANALYST")
+                .requestMatchers("/scores/**", "/ratings/generate/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            );
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Use BCrypt for password hashing [cite: 365]
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager(); // [cite: 364]
+        return authConfig.getAuthenticationManager();
     }
-
- @Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.disable()) // CSRF must be disabled for stateless APIs 
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // [cite: 366]
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/hello-servlet").permitAll() // [cite: 368-373]
-            .requestMatchers("/properties/**").hasAnyRole("ADMIN", "ANALYST")
-            .requestMatchers("/scores/**").hasRole("ADMIN") // Restrict to ADMIN 
-            .anyRequest().authenticated()
-        );
-    return http.build();
-}
 }
