@@ -4,30 +4,33 @@ import com.example.demo.entity.Property;
 import com.example.demo.repository.PropertyRepository;
 import com.example.demo.service.PropertyService;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class PropertyServiceImpl implements PropertyService {
-
-    private final PropertyRepository propertyRepository; // [cite: 256]
-
+    
+    private final PropertyRepository propertyRepository;
+    
     public PropertyServiceImpl(PropertyRepository propertyRepository) {
         this.propertyRepository = propertyRepository;
     }
-
+    
     @Override
     public Property addProperty(Property property) {
-        if (property.getPrice() < 0) {
-            throw new IllegalArgumentException("Price must be greater than or equal to 0"); // [cite: 258]
+        if (property.getPrice() == null || property.getPrice() < 0) {
+            throw new IllegalArgumentException("Price must be greater than or equal to 0");
         }
-        if (property.getAreaSqFt() < 100) {
-            throw new IllegalArgumentException("Area must be at least 100 sq ft"); // [cite: 258]
+        
+        if (property.getAreaSqFt() == null || property.getAreaSqFt() < 100) {
+            throw new IllegalArgumentException("Area must be at least 100 square feet");
         }
-        return propertyRepository.save(property); // [cite: 260]
+        
+        return propertyRepository.save(property);
     }
-
+    
     @Override
     public List<Property> getAllProperties() {
-        return propertyRepository.findAll(); // [cite: 261]
+        return propertyRepository.findAll();
     }
 }

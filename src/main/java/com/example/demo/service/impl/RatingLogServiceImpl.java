@@ -7,37 +7,35 @@ import com.example.demo.repository.PropertyRepository;
 import com.example.demo.repository.RatingLogRepository;
 import com.example.demo.service.RatingLogService;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class RatingLogServiceImpl implements RatingLogService {
-
-    private final RatingLogRepository logRepository; // [cite: 294]
-    private final PropertyRepository propertyRepository; // [cite: 295]
-
-    public RatingLogServiceImpl(RatingLogRepository logRepository, PropertyRepository propertyRepository) {
-        this.logRepository = logRepository;
+    
+    private final RatingLogRepository ratingLogRepository;
+    private final PropertyRepository propertyRepository;
+    
+    public RatingLogServiceImpl(RatingLogRepository ratingLogRepository, PropertyRepository propertyRepository) {
+        this.ratingLogRepository = ratingLogRepository;
         this.propertyRepository = propertyRepository;
     }
-
+    
     @Override
     public RatingLog addLog(Long propertyId, String message) {
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found")); // [cite: 297]
-
-        RatingLog log = new RatingLog();
-        log.setProperty(property); // [cite: 298]
-        log.setMessage(message);
-        log.setLoggedAt(LocalDateTime.now()); // [cite: 299]
-
-        return logRepository.save(log);
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found with id: " + propertyId));
+        
+        RatingLog log = new RatingLog(property, message, LocalDateTime.now());
+        return ratingLogRepository.save(log);
     }
-
+    
     @Override
     public List<RatingLog> getLogsByProperty(Long propertyId) {
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
-        return logRepository.findByProperty(property); // [cite: 300]
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found with id: " + propertyId));
+        
+        return ratingLogRepository.findByProperty(property);
     }
 }
