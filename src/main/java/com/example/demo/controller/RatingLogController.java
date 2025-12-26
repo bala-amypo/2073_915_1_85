@@ -6,24 +6,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/logs") // [cite: 349]
+@RequestMapping("/logs")
 public class RatingLogController {
-
+    
     private final RatingLogService ratingLogService;
-
+    
     public RatingLogController(RatingLogService ratingLogService) {
         this.ratingLogService = ratingLogService;
     }
-
-    @PostMapping("/{propertyId}") // [cite: 352]
-    public ResponseEntity<RatingLog> addLog(@PathVariable Long propertyId, @RequestBody String message) {
-        return ResponseEntity.ok(ratingLogService.addLog(propertyId, message)); // [cite: 354]
+    
+    @PostMapping("/{propertyId}")
+    public ResponseEntity<RatingLog> addLog(@PathVariable Long propertyId, @RequestBody Map<String, String> request) {
+        String message = request.get("message");
+        RatingLog log = ratingLogService.addLog(propertyId, message);
+        return ResponseEntity.ok(log);
     }
-
-    @GetMapping("/{propertyId}") // [cite: 355]
+    
+    @GetMapping("/{propertyId}")
     public ResponseEntity<List<RatingLog>> getLogs(@PathVariable Long propertyId) {
-        return ResponseEntity.ok(ratingLogService.getLogsByProperty(propertyId)); // [cite: 357]
+        List<RatingLog> logs = ratingLogService.getLogsByProperty(propertyId);
+        return ResponseEntity.ok(logs);
     }
 }

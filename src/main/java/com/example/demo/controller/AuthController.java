@@ -13,40 +13,44 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth") // [cite: 308]
+@RequestMapping("/auth")
 public class AuthController {
-
+    
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
-
+    
     public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
     }
-
-    @PostMapping("/register") // [cite: 310]
-    public ResponseEntity<User> registerUser(@RequestBody RegisterRequest registerRequest) {
-        User user = new User(
-            registerRequest.getName(), 
-            registerRequest.getEmail(), 
-            registerRequest.getPassword(), 
-            registerRequest.getRole()
-        );
-        User result = userService.registerUser(user); // [cite: 241, 312]
-        return ResponseEntity.ok(result); // Returning User entity directly instead of ApiResponse
-    }
-
-    @PostMapping("/login") // [cite: 313]
-    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+        User user = new User(request.getName(), request.getEmail(), request.getPassword(), request.getRole());
+        User savedUser = userService.registerUser(user);
+        
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-
-        User user = userService.findByEmail(loginRequest.getEmail()); // [cite: 250]
-        String jwt = tokenProvider.generateToken(authentication, user); // [cite: 397]
-
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getEmail(), user.getRole())); // [cite: 152]
+        
+        String token = tokenProvider.generateToken(authentication, savedUser);
+        
+        AuthResponse response = new AuthResponse(token, savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
+        return ResponseEntity.status(201).body(response);
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        
+        User user = userService.findByEmail(request.getEmail());
+        String token = tokenProvider.generateToken(authentication, user);
+        
+        AuthResponse response = new AuthResponse(token, user.getId(), user.getEmail(), user.getRole());
+        return ResponseEntity.ok(response);
     }
 }

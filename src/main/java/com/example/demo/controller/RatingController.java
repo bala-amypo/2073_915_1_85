@@ -7,23 +7,25 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ratings") // [cite: 340]
+@RequestMapping("/ratings")
 public class RatingController {
-
+    
     private final RatingService ratingService;
-
+    
     public RatingController(RatingService ratingService) {
         this.ratingService = ratingService;
     }
-
-    @PostMapping("/generate/{propertyId}") // [cite: 342]
-    @PreAuthorize("hasRole('ADMIN')") // [cite: 343]
+    
+    @PostMapping("/generate/{propertyId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RatingResult> generateRating(@PathVariable Long propertyId) {
-        return ResponseEntity.ok(ratingService.generateRating(propertyId)); // [cite: 344]
+        RatingResult rating = ratingService.generateRating(propertyId);
+        return ResponseEntity.status(201).body(rating);
     }
-
-    @GetMapping("/property/{propertyId}") // [cite: 345]
+    
+    @GetMapping("/property/{propertyId}")
     public ResponseEntity<RatingResult> getRating(@PathVariable Long propertyId) {
-        return ResponseEntity.ok(ratingService.getRating(propertyId)); // [cite: 347]
+        RatingResult rating = ratingService.getRating(propertyId);
+        return ResponseEntity.ok(rating);
     }
 }

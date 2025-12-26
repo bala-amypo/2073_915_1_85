@@ -9,23 +9,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/properties") // [cite: 318]
+@RequestMapping("/properties")
 public class PropertyController {
-
+    
     private final PropertyService propertyService;
-
+    
     public PropertyController(PropertyService propertyService) {
         this.propertyService = propertyService;
     }
-
-    @PostMapping // [cite: 320]
-    @PreAuthorize("hasRole('ADMIN')") // [cite: 321]
+    
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Property> addProperty(@RequestBody Property property) {
-        return ResponseEntity.ok(propertyService.addProperty(property)); // [cite: 323]
+        Property savedProperty = propertyService.addProperty(property);
+        return ResponseEntity.status(201).body(savedProperty);
     }
-
-    @GetMapping // [cite: 324]
+    
+    @GetMapping
     public ResponseEntity<List<Property>> getAllProperties() {
-        return ResponseEntity.ok(propertyService.getAllProperties()); // [cite: 326]
+        List<Property> properties = propertyService.getAllProperties();
+        return ResponseEntity.ok(properties);
     }
 }
