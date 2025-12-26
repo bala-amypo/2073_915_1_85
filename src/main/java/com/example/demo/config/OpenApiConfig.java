@@ -16,7 +16,8 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        // Define the server link (e.g., development environment) 
+
+        // Server configuration
         Server devServer = new Server();
         devServer.setUrl("https://9088.408procr.amypo.ai/");
         devServer.setDescription("Development Server");
@@ -24,14 +25,15 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Real Estate Rating Engine API")
-                        .description("API for managing properties and computing real estate ratings.")
+                        .description("API for managing real estate properties and computing their ratings.")
                         .version("1.0"))
-                .servers(List.of(devServer)) // Add the server link here
+                .servers(List.of(devServer))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
-                .components(new Components().addSecuritySchemes("Bearer Authentication", createSecurityScheme()));
+                .components(new Components()
+                        .addSecuritySchemes("Bearer Authentication", bearerSecurityScheme()));
     }
 
-    private SecurityScheme createSecurityScheme() {
+    private SecurityScheme bearerSecurityScheme() {
         return new SecurityScheme()
                 .name("Bearer Authentication")
                 .type(SecurityScheme.Type.HTTP)
