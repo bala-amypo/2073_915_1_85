@@ -1,11 +1,12 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Property;
 import com.example.demo.entity.RatingLog;
+import com.example.demo.entity.Property;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
+@Repository
 public interface RatingLogRepository extends JpaRepository<RatingLog, Long> {
-    // Retrieve all logs for a specific property [cite: 198]
-    List<RatingLog> findByProperty(Property property); 
+    List<RatingLog> findByProperty(Property property);
 }

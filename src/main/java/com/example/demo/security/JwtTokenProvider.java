@@ -1,68 +1,71 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.example.demo.entity.User;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import com.example.demo.entity.User;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
+
 @Component
 public class JwtTokenProvider {
-
-    // Adding a default value after the colon (:)
-    @Value("${app.jwt.secret:defaultSecretKeyForDevelopmentOnlyMakeItLongerInProduction}")
+    
+    @Value("${jwt.secret}")
     private String jwtSecret;
-
-    @Value("${app.jwt.expiration-ms:3600000}")
+    
+    @Value("${jwt.expiration}")
     private int jwtExpirationInMs;
     
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
     
     public String generateToken(Authentication authentication, User user) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-
+        Date expiryDate = new Date(System.currentTimeMillis() + jwtExpirationInMs);
+        
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("id", user.getId()) // Ensure ID is added to claims
+                .claim("userId", user.getId())
+                .claim("email", user.getEmail())
                 .claim("role", user.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSigningKey())
                 .compact();
     }
-
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+    
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
-
-    // REQUIRED METHOD FOR THE TEST SUITE
+    
     public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
         
-        // Convert the "id" claim back to a Long
-        Object userId = claims.get("id");
-        if (userId instanceof Integer) {
-            return ((Integer) userId).longValue();
-        }
-        return (Long) userId;
+        return claims.get("userId", Long.class);
     }
-
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
+    
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        
+        return claims.getSubject();
     }
 }
