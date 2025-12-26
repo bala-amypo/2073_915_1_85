@@ -12,27 +12,22 @@ import java.util.Collections;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-
+    
     private final UserRepository userRepository;
-
+    
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
+    
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Find user in database
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
-        // Create authority with ROLE_ prefix (e.g., ROLE_ADMIN)
-    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole());
-
-        // Return Spring Security User object
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(authority)
-        );
+        
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())))
+                .build();
     }
 }
