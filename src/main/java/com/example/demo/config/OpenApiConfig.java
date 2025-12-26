@@ -17,7 +17,6 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
 
-        // Server configuration
         Server devServer = new Server();
         devServer.setUrl("https://9088.408procr.amypo.ai/");
         devServer.setDescription("Development Server");
